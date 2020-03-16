@@ -1,9 +1,9 @@
 ---
-title: "COVID-19 Data Visualization"
+title: "COVID-19 LearnR with Data"
 output: 
   learnr::tutorial
 runtime: shiny_prerendered
-date: '16 March 2020'
+date: 'Date: `r format(Sys.Date(), "%B %d, %Y")`'
 author: Nicolò Caporale
 ---
 
@@ -21,10 +21,15 @@ So I want to underline that this is not playing with numbers and colors but an a
 
 ***
 
+If you are not interested in learning R you can go directly to the "Total Cases" tab to have a look at the data.
+
+***
+
 Outside the emergency, our main activity is to study the physiology and pathology of neurodevelopment, in the lab of Giuseppe Testa at the European Institute of Oncology and the Human Technopole, University of Milan, Italy. 
 You can read more here http://www.testalab.eu/bibliography/
 
 ### SetUp
+
 In this first chunck we start loading the libraries that contain the functions that will facilitate our work later
 ```{r, message=FALSE}
 library(Hmisc)
@@ -32,6 +37,8 @@ library(tidyverse)
 library(readxl)
 library(learnr)
 library(RColorBrewer)
+library(plotly)
+library(htmlwidgets)
 data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-16.xls")
 ```
 
@@ -41,12 +48,16 @@ library(tidyverse)
 library(readxl)
 library(learnr)
 library(RColorBrewer)
+library(plotly)
+library(htmlwidgets)
 data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-16.xls")
 col <- topo.colors(length(unique(data$CountryExp)))
 names(col) <- unique(data$CountryExp)
 data$Date <- as.character(data$DateRep)
 data$totalCases <- 0
 data$totalDeaths <- 0
+data$totalCasesPerDay <- 0
+data$totalDeathsPerDay <- 0
 ```
 
 
@@ -261,9 +272,10 @@ Germany <- data[which(data$CountryExp=="Germany"),]
 ###
 
 And now we will find a way to do the same for all the country in a fast way:
+(for reasons of space I will only do the loop for the first 10 countries, but you can easily change that and try it in the exercise chunk..)
 
 ```{r, fig.height=6, fig.width=8}
-for (i in unique(data$CountryExp)) {
+for (i in unique(data$CountryExp)[1:10]) {
   tmp <- data[which(data$CountryExp==i),]
   p <- ggplot(tmp, aes(x= DateRep, y= NewConfCases, col= col[i])) + 
     geom_point() + 
@@ -352,11 +364,12 @@ Finally we compute the total number of cases for each country and look again at 
 ```{r, fig.width=12, fig.height=8}
 data$totalCases <- 0
 data$totalDeaths <- 0
+data$totalCasesPerDay <- 0
+data$totalDeathsPerDay <- 0
 
 for (i in unique(data$CountryExp)) {
 data$totalCases[which(data$CountryExp==i)] <- sum(data$NewConfCases[which(data$CountryExp==i)])  
 }
-
 
 ggplot(data, aes(CountryExp, totalCases, col=col[data$CountryExp])) +
   geom_col()+
@@ -370,8 +383,42 @@ ggplot(data, aes(CountryExp, log(totalCases+0.1), col=col[data$CountryExp])) +
 
 ```
 
+###
 
-### Exercise {data-allow-skip=TRUE}
+And also at the evolution of total cases per day, in this case using an interactive plot, so that if you hover the mouse on the point you can check the precise values and the country.
+
+```{r, fig.width=8, fig.height=7}
+data <- data[order(data$DateRep),]
+for (i in unique(data$CountryExp)) {
+  tmp <- data[which(data$CountryExp==i),]
+      for (j in c(1:length(unique(tmp$Date)))) {
+        
+          tmp$totalCasesPerDay[which(tmp$Date==tmp$Date[j])] <- sum(tmp$totalCasesPerDay[which(tmp$Date==tmp$Date[j-1])] + tmp$NewConfCases[which(tmp$Date==tmp$Date[j])])
+          
+      }
+  data$totalCasesPerDay[which(data$CountryExp==i)] <- tmp$totalCasesPerDay
+}
+
+scatterPlot <- ggplot(data, aes(x =DateRep, y = totalCasesPerDay, text =CountryExp)) +
+  geom_point(colour = col[data$CountryExp]) + 
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1)) +
+  theme_classic()
+
+ggplotly(scatterPlot)
+```
+
+(Remember if you want to isolate 1 country)
+
+```{r, fig.width=8, fig.height=7}
+Italy <- data[which(data$CountryExp=="Italy"),]
+ggplot(Italy, aes(x =DateRep, y = totalCasesPerDay)) +
+  geom_point() + 
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
+  theme(legend.position = "none") 
+```
+
+
+### Final Exercises {data-allow-skip=TRUE}
 
 Analyse in a similar way the number of deaths
 
@@ -379,7 +426,7 @@ Analyse in a similar way the number of deaths
 
 ```
 
-```{r ex8-solution, fig.width=12, fig.height=8}
+```{r ex8-solution, fig.width=12, fig.height=12}
 for (i in unique(data$CountryExp)) {
 data$totalDeaths[which(data$CountryExp==i)] <- sum(data$NewDeaths[which(data$CountryExp==i)])  
 }
@@ -390,7 +437,49 @@ ggplot(data, aes(CountryExp, totalDeaths, col=col[data$CountryExp])) +
   theme(legend.position="none")
 ```
 
+```{r ex9, exercise=TRUE,fig.width=8, fig.height=7}
 
-
-```{r child='footer.Rmd'}
 ```
+
+```{r ex9-solution, fig.width=8, fig.height=7}
+data <- data[order(data$DateRep),]
+for (i in unique(data$CountryExp)) {
+  tmp <- data[which(data$CountryExp==i),]
+      for (j in c(1:length(unique(tmp$Date)))) {
+        
+          tmp$totalDeathsPerDay[which(tmp$Date==tmp$Date[j])] <- sum(tmp$totalDeathsPerDay[which(tmp$Date==tmp$Date[j-1])] + tmp$NewDeaths[which(tmp$Date==tmp$Date[j])])
+          
+      }
+  data$totalDeathsPerDay[which(data$CountryExp==i)] <- tmp$totalDeathsPerDay
+}
+
+scatterPlot <- ggplot(data, aes(x =DateRep, y = totalDeathsPerDay, text =CountryExp)) +
+  geom_point(colour = col[data$CountryExp]) + 
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1)) +
+  theme_classic()
+
+ggplotly(scatterPlot)
+```
+
+
+### Aknowlegment and Contact
+
+Data were downloaded from the European Centre for Disease Prevention and Control webpage:
+https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
+
+***
+
+This was a didactic experiment to help colleagues and other people with analysis of real world data. Big thank and support for all the people working in the clinics in this hard period. 
+
+***
+
+Outside the emergency, our main activity is to study the physiology and pathology of neurodevelopment, in the lab of Giuseppe Testa at the European Institute of Oncology and Human Technopole in Milan, you can read more here  http://www.testalab.eu/bibliography/
+
+***
+
+The templates and guides for this course were downloaded from 
+https://rstudio.github.io/learnr/#overview
+
+***
+
+contact: nicolo.caporale@gmail.com
