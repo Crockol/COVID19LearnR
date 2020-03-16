@@ -1,0 +1,38 @@
+
+### Index
+
+[14March2020](COVID19Analysis_2020_03_14.Rmd)
+
+***
+
+[15March2020](COVID19Analysis_2020_03_15.Rmd)
+
+***
+
+[16March2020](COVID19Analysis_2020_03_16.Rmd)
+
+
+### Aknowlegment and Contact
+
+Data were downloaded from the European Centre for Disease Prevention and Control webpage:
+https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
+
+***
+
+This was a didactic experiment to help colleagues and other people with analysis of real world data. Big thank and support for all the people working in the clinics in this hard period. 
+
+***
+
+Outside the emergency, our main activity is to study the physiology and pathology of neurodevelopment, in the lab of Giuseppe Testa at the European Institute of Oncology and Human Technopole in Milan, you can read more here  http://www.testalab.eu/bibliography/
+
+***
+
+The templates and guides for this course were downloaded from 
+https://rstudio.github.io/learnr/#overview
+
+***
+
+contact: nicolo.caporale@gmail.com
+
+Application run on 'Date: `r format(Sys.Date(), "%B %d, %Y")`'
+
