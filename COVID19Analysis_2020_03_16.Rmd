@@ -21,7 +21,8 @@ So I want to underline that this is not playing with numbers and colors but an a
 
 ***
 
-If you are not interested in learning R you can go directly to the "Total Cases" tab to have a look at the data.
+If you are not interested in learning R you can go directly to the "Total Cases" tab to have a look at the data. Or look at better sources like this one:
+https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 
 ***
 
