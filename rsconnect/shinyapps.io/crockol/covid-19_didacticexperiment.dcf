@@ -5,6 +5,6 @@ account: crockol
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1952078
-bundleId: 2886148
+bundleId: 2886280
 url: https://crockol.shinyapps.io/covid-19_didacticexperiment/
-when: 1584356470.79947
+when: 1584360013.5244
