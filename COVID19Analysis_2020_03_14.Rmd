@@ -45,6 +45,8 @@ data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-0
 col <- topo.colors(length(unique(data$CountryExp)))
 names(col) <- unique(data$CountryExp)
 data$Date <- as.character(data$DateRep)
+data$totalCases <- 0
+data$totalDeaths <- 0
 ```
 
 
