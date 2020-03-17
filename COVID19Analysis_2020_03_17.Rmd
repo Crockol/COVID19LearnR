@@ -40,26 +40,10 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-16.xls")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-17.xlsx")
 ```
 
-```{r setup, include=FALSE}
-library(Hmisc)
-library(tidyverse)
-library(readxl)
-library(learnr)
-library(RColorBrewer)
-library(plotly)
-library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-16.xls")
-col <- topo.colors(length(unique(data$CountryExp)))
-names(col) <- unique(data$CountryExp)
-data$Date <- as.character(data$DateRep)
-data$totalCases <- 0
-data$totalDeaths <- 0
-data$totalCasesPerDay <- 0
-data$totalDeathsPerDay <- 0
-```
+
 
 
 ## Data Check {data-progressive=TRUE}
@@ -79,9 +63,19 @@ DT::datatable(data)
 ```{r}
 dim(data)
 colnames(data)
+```
+
+#### 
+
+Here I transform the names of the column to avoid spaces. This is a classical mistake that is better to avoid when preparing your database. Then proceed with exploring some of the data inside the dataframe.
+
+```{r}
+colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
+colnames(data)
+class(data$Countries)
 head(rownames(data))
-head(data$CountryExp)
-head(data$NewConfCases)
+head(data$Countries)
+head(data$Cases)
 ```
 
 ### summary statistics
@@ -89,6 +83,25 @@ This command makes the summary statistics for the object of your interest
 
 ```{r}
 summary(data)
+```
+
+```{r setup, include=FALSE}
+library(Hmisc)
+library(tidyverse)
+library(readxl)
+library(learnr)
+library(RColorBrewer)
+library(plotly)
+library(htmlwidgets)
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-17.xlsx")
+colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
+col <- topo.colors(length(unique(data$Countries)))
+names(col) <- unique(data$Countries)
+data$Date <- as.character(data$DateRep)
+data$totalCases <- 0
+data$totalDeaths <- 0
+data$totalCasesPerDay <- 0
+data$totalDeathsPerDay <- 0
 ```
 
 ### Exercise {data-allow-skip=TRUE}
@@ -105,7 +118,7 @@ Write the R code required to view the names of the column of your dataset:
 colnames(data)
 ```
 
-Write the R code required to check which type of data you have in the columns "CountryExp" and "NewConfCases" of the dataset:
+Write the R code required to check which type of data you have in the columns "Countries and territories" and "Cases" of the dataset:
 
 ```{r ex2, exercise=TRUE}
 
@@ -113,8 +126,8 @@ Write the R code required to check which type of data you have in the columns "C
 
 
 ```{r ex2-solution}
-class(data$CountryExp)
-class(data$NewConfCases)
+class(data$Countries)
+class(data$Cases)
 ```
 
 
@@ -136,7 +149,7 @@ summary(data$DateRep)
 The first kind of useful plot for looking at the data is a scatterplot between 2 numeric variables 
 
 ```{r}
-ggplot(data, aes(x=NewConfCases, y=NewDeaths)) + geom_point()
+ggplot(data, aes(x=Cases, y=Deaths)) + geom_point()
 ```
 
 And you can use the boxplot function that shows you the distribution of your data points. By default it highlights also the outliers.
@@ -145,20 +158,20 @@ Here you can read more:
 https://towardsdatascience.com/understanding-boxplots-5e2df7bcbd51
 
 ```{r}
-boxplot(data$NewConfCases)
+boxplot(data$Cases)
 ```
 
 
 Often when looking at distribution of points, transforming the data with the log function is useful, and you can also color the points for different countries to have more information
 
 ```{r, fig.width=8, fig.height=6, warning=FALSE}
-ggplot(data, aes(log(NewConfCases+0.1), NewDeaths,)) + 
+ggplot(data, aes(log(Cases+0.1), Deaths,)) + 
   geom_point()
 ```
 
 
 ```{r, warning=FALSE}
-boxplot(log(data$NewConfCases+0.1))
+boxplot(log(data$Cases+0.1))
 ```
 
 
@@ -171,8 +184,8 @@ Plot distribution of new deaths with boxplot:
 ```
 
 ```{r ex4-solution,warning=FALSE}
-boxplot(data$NewDeaths)
-boxplot(log(data$NewDeaths+0.1))
+boxplot(data$Deaths)
+boxplot(log(data$Deaths+0.1))
 ```
 
 
@@ -186,14 +199,14 @@ One thing we can explore is the distribution of cases across different groups.
 Here for example we use histograms to compare today distribution of new cases across countries
 
 ```{r, fig.height=8, fig.width=12}
-length(unique(data$CountryExp))
-col <- topo.colors(length(unique(data$CountryExp)))
-names(col) <- unique(data$CountryExp)
+length(unique(data$Countries))
+col <- topo.colors(length(unique(data$Countries)))
+names(col) <- unique(data$Countries)
 
 data$Date <- as.character(data$DateRep)
 
 March14 <- data[which(data$Date=="2020-03-14"),]
-ggplot(March14, aes(CountryExp, NewConfCases, col= col[March14$CountryExp],)) +
+ggplot(March14, aes(Countries, Cases, col= col[March14$Countries],)) +
   geom_col()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position="none")
@@ -210,7 +223,7 @@ Analyse in a similar way the number of new deaths
 
 ```{r ex7-solution, fig.height=8, fig.width=12}
 March14 <- data[which(data$Date=="2020-03-14"),]
-ggplot(March14, aes(CountryExp, NewDeaths, col= col[March14$CountryExp],)) +
+ggplot(March14, aes(Countries, Deaths, col= col[March14$Countries],)) +
   geom_col()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position="none")
@@ -222,7 +235,7 @@ ggplot(March14, aes(CountryExp, NewDeaths, col= col[March14$CountryExp],)) +
 Another way to perform a similar kind of analysis is to compare distribution of new cases along time, splitting the bars for countries
 
 ```{r, fig.height=10, fig.width=10}
-ggplot(data, aes(Date, NewConfCases, fill=CountryExp)) +
+ggplot(data, aes(Date, Cases, fill=Countries)) +
   geom_col()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position="bottom")
@@ -236,7 +249,7 @@ But if there are too many countries this representation is difficult to read, so
 One basic analysis we can do is to check the evolution of new cases along time with scatterplots.
 
 ```{r}
-ggplot(data, aes(x= DateRep, y= NewConfCases)) + 
+ggplot(data, aes(x= DateRep, y= Cases)) + 
   geom_point()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))
 ```
@@ -245,24 +258,24 @@ ggplot(data, aes(x= DateRep, y= NewConfCases)) +
 But with all the data aggregated is kind of useless, so we can split and observe the evolution in different Countries
  
 ```{r, fig.height=6, fig.width=8}
-Italy <- data[which(data$CountryExp=="Italy"),]
-  p <- ggplot(Italy, aes(x= DateRep, y= NewConfCases, col= col["Italy"])) + 
+Italy <- data[which(data$Countries=="Italy"),]
+  p <- ggplot(Italy, aes(x= DateRep, y= Cases, col= col["Italy"])) + 
     geom_point() + 
     ggtitle("Italy") +
     theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
     theme(legend.position = "none") 
   p
 
-China <- data[which(data$CountryExp=="China"),]
-  p <- ggplot(China, aes(x= DateRep, y= NewConfCases, col= col["China"])) + 
+China <- data[which(data$Countries=="China"),]
+  p <- ggplot(China, aes(x= DateRep, y= Cases, col= col["China"])) + 
     geom_point() + 
     ggtitle("China") +
     theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
     theme(legend.position = "none") 
   p
   
-Germany <- data[which(data$CountryExp=="Germany"),]
-  p <- ggplot(Germany, aes(x= DateRep, y= NewConfCases, col= col["Germany"])) + 
+Germany <- data[which(data$Countries=="Germany"),]
+  p <- ggplot(Germany, aes(x= DateRep, y= Cases, col= col["Germany"])) + 
     geom_point() + 
     ggtitle("Germany") +
     theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
@@ -276,9 +289,9 @@ And now we will find a way to do the same for all the country in a fast way:
 (for reasons of space I will only do the loop for the first 10 countries, but you can easily change that and try it in the exercise chunk..)
 
 ```{r, fig.height=6, fig.width=8}
-for (i in unique(data$CountryExp)[1:10]) {
-  tmp <- data[which(data$CountryExp==i),]
-  p <- ggplot(tmp, aes(x= DateRep, y= NewConfCases, col= col[i])) + 
+for (i in unique(data$Countries)[1:10]) {
+  tmp <- data[which(data$Countries==i),]
+  p <- ggplot(tmp, aes(x= DateRep, y= Cases, col= col[i])) + 
     geom_point() + 
     ggtitle(i) +
     theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
@@ -298,7 +311,7 @@ Repeat the analysis for the number of deaths across EU and non-EU territories.
 ```{r ex5-solution}
 for (i in unique(data$EU)) {
   tmp <- data[which(data$EU==i),]
-  p <- ggplot(tmp, aes(x= DateRep, y= NewDeaths)) + 
+  p <- ggplot(tmp, aes(x= DateRep, y= Deaths)) + 
     geom_point() + 
     ggtitle(i) +
     theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
@@ -313,10 +326,10 @@ for (i in unique(data$EU)) {
 Now we perform a linear regression to follow the trend
 
 ```{r, warning=FALSE, fig.width=8, fig.height=7}
-Italy <- data[which(data$CountryExp=="Italy"),]
+Italy <- data[which(data$Countries=="Italy"),]
 
-Italy$pred <- predict(lm(NewConfCases ~ DateRep , data = Italy))
-ggplot(Italy, aes(x =DateRep, y = NewConfCases)) +
+Italy$pred <- predict(lm(Cases ~ DateRep , data = Italy))
+ggplot(Italy, aes(x =DateRep, y = Cases)) +
   geom_point() + 
   geom_line(aes(y = pred)) +
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
@@ -326,8 +339,8 @@ ggplot(Italy, aes(x =DateRep, y = NewConfCases)) +
 Or better fit an exponential model in this case
 
 ```{r, warning=FALSE,fig.width=8, fig.height=7} 
-Italy$pred <- exp(predict(lm(log2(NewConfCases+0.01) ~ DateRep , data = Italy)))
-ggplot(Italy, aes(x =DateRep, y = NewConfCases)) +
+Italy$pred <- exp(predict(lm(log2(Cases+0.01) ~ DateRep , data = Italy)))
+ggplot(Italy, aes(x =DateRep, y = Cases)) +
   geom_point() + 
   geom_line(aes(y = pred)) +
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
@@ -343,13 +356,21 @@ Now repeat the same analysis for the cases of new deaths along time for Germany
 ```
 
 ```{r ex6-solution,fig.width=8, fig.height=7}
-Germany <- data[which(data$CountryExp=="Germany"),]
-Germany$pred <- exp(predict(lm(log2(NewDeaths+0.01) ~ DateRep , data = Germany)))
-ggplot(Germany, aes(x =DateRep, y = NewDeaths)) +
+Germany <- data[which(data$Countries=="Germany"),]
+Germany$pred <- predict(lm(Deaths ~ DateRep , data = Germany))
+ggplot(Germany, aes(x =DateRep, y = Deaths)) +
   geom_point() + 
   geom_line(aes(y = pred)) +
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
-  theme(legend.position = "none")  
+  theme(legend.position = "none") 
+  
+Germany$pred <- exp(predict(lm(log10(Deaths+0.01)~ DateRep , data = Germany)))
+ggplot(Germany, aes(x =DateRep, y = Deaths)) +
+  geom_point() + 
+  geom_line(aes(y = pred)) +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
+  theme(legend.position = "none") 
+
 ```
 
 
@@ -362,22 +383,28 @@ http://r-statistics.co/Linear-Regression.html
 
 Finally we compute the total number of cases for each country and look again at the data
 
-```{r, fig.width=12, fig.height=8}
+```{r, fig.width=13, fig.height=8}
 data$totalCases <- 0
 data$totalDeaths <- 0
 data$totalCasesPerDay <- 0
 data$totalDeathsPerDay <- 0
 
-for (i in unique(data$CountryExp)) {
-data$totalCases[which(data$CountryExp==i)] <- sum(data$NewConfCases[which(data$CountryExp==i)])  
+for (i in unique(data$Countries)) {
+data$totalCases[which(data$Countries==i)] <- sum(data$Cases[which(data$Countries==i)])  
 }
 
-ggplot(data, aes(CountryExp, totalCases, col=col[data$CountryExp])) +
+ggplot(data, aes(Countries, totalCases, col=col[data$Countries])) +
   geom_col()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position="none")
 
-ggplot(data, aes(CountryExp, log(totalCases+0.1), col=col[data$CountryExp])) +
+```
+
+And with a log transformation
+
+```{r, fig.width=13, fig.height=8}
+
+ggplot(data, aes(Countries, log(totalCases+0.1), col=col[data$Countries])) +
   geom_col()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position="none")
@@ -390,18 +417,18 @@ And also at the evolution of total cases per day, in this case using an interact
 
 ```{r, fig.width=8, fig.height=7}
 data <- data[order(data$DateRep),]
-for (i in unique(data$CountryExp)) {
-  tmp <- data[which(data$CountryExp==i),]
+for (i in unique(data$Countries)) {
+  tmp <- data[which(data$Countries==i),]
       for (j in c(1:length(unique(tmp$Date)))) {
         
-          tmp$totalCasesPerDay[which(tmp$Date==tmp$Date[j])] <- sum(tmp$totalCasesPerDay[which(tmp$Date==tmp$Date[j-1])] + tmp$NewConfCases[which(tmp$Date==tmp$Date[j])])
+          tmp$totalCasesPerDay[which(tmp$Date==tmp$Date[j])] <- sum(tmp$totalCasesPerDay[which(tmp$Date==tmp$Date[j-1])] + tmp$Cases[which(tmp$Date==tmp$Date[j])])
           
       }
-  data$totalCasesPerDay[which(data$CountryExp==i)] <- tmp$totalCasesPerDay
+  data$totalCasesPerDay[which(data$Countries==i)] <- tmp$totalCasesPerDay
 }
 
-scatterPlot <- ggplot(data, aes(x =DateRep, y = totalCasesPerDay, text =CountryExp)) +
-  geom_point(colour = col[data$CountryExp]) + 
+scatterPlot <- ggplot(data, aes(x =DateRep, y = totalCasesPerDay, text =Countries)) +
+  geom_point(colour = col[data$Countries]) + 
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1)) +
   theme_classic()
 
@@ -411,7 +438,7 @@ ggplotly(scatterPlot)
 (Remember if you want to isolate 1 country)
 
 ```{r, fig.width=8, fig.height=7}
-Italy <- data[which(data$CountryExp=="Italy"),]
+Italy <- data[which(data$Countries=="Italy"),]
 ggplot(Italy, aes(x =DateRep, y = totalCasesPerDay)) +
   geom_point() + 
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
@@ -428,11 +455,11 @@ Analyse in a similar way the number of deaths
 ```
 
 ```{r ex8-solution, fig.width=12, fig.height=12}
-for (i in unique(data$CountryExp)) {
-data$totalDeaths[which(data$CountryExp==i)] <- sum(data$NewDeaths[which(data$CountryExp==i)])  
+for (i in unique(data$Countries)) {
+data$totalDeaths[which(data$Countries==i)] <- sum(data$Deaths[which(data$Countries==i)])  
 }
 
-ggplot(data, aes(CountryExp, totalDeaths, col=col[data$CountryExp])) +
+ggplot(data, aes(Countries, totalDeaths, col=col[data$Countries])) +
   geom_col()+
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position="none")
@@ -444,18 +471,18 @@ ggplot(data, aes(CountryExp, totalDeaths, col=col[data$CountryExp])) +
 
 ```{r ex9-solution, fig.width=8, fig.height=7}
 data <- data[order(data$DateRep),]
-for (i in unique(data$CountryExp)) {
-  tmp <- data[which(data$CountryExp==i),]
+for (i in unique(data$Countries)) {
+  tmp <- data[which(data$Countries==i),]
       for (j in c(1:length(unique(tmp$Date)))) {
         
-          tmp$totalDeathsPerDay[which(tmp$Date==tmp$Date[j])] <- sum(tmp$totalDeathsPerDay[which(tmp$Date==tmp$Date[j-1])] + tmp$NewDeaths[which(tmp$Date==tmp$Date[j])])
+          tmp$totalDeathsPerDay[which(tmp$Date==tmp$Date[j])] <- sum(tmp$totalDeathsPerDay[which(tmp$Date==tmp$Date[j-1])] + tmp$Deaths[which(tmp$Date==tmp$Date[j])])
           
       }
-  data$totalDeathsPerDay[which(data$CountryExp==i)] <- tmp$totalDeathsPerDay
+  data$totalDeathsPerDay[which(data$Countries==i)] <- tmp$totalDeathsPerDay
 }
 
-scatterPlot <- ggplot(data, aes(x =DateRep, y = totalDeathsPerDay, text =CountryExp)) +
-  geom_point(colour = col[data$CountryExp]) + 
+scatterPlot <- ggplot(data, aes(x =DateRep, y = totalDeathsPerDay, text =Countries)) +
+  geom_point(colour = col[data$Countries]) + 
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1)) +
   theme_classic()
 
