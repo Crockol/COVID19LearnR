@@ -12,6 +12,9 @@ author: Nicolò Caporale
 This is a didactic experiment on basic data analysis with R, using the datasets downloaded from the European Centre for Disease Prevention and Control webpage:
 https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
 
+and the portal from Protezione Civile for the Italian case:
+https://github.com/pcm-dpc/COVID-19
+
 ***
 
 This is not a way to underestimate the suffering of this period.
@@ -40,7 +43,7 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-17.xlsx")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-19.xlsx")
 ```
 
 
@@ -93,7 +96,7 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-17.xlsx")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-19.xlsx")
 colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
 col <- topo.colors(length(unique(data$Countries)))
 names(col) <- unique(data$Countries)
@@ -102,6 +105,7 @@ data$totalCases <- 0
 data$totalDeaths <- 0
 data$totalCasesPerDay <- 0
 data$totalDeathsPerDay <- 0
+dataITALY <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"),header = T)
 ```
 
 ### Exercise {data-allow-skip=TRUE}
@@ -381,7 +385,7 @@ http://r-statistics.co/Linear-Regression.html
 
 ## Total Cases {data-progressive=TRUE}
 
-Finally we compute the total number of cases for each country and look again at the data
+Here we compute the total number of cases for each country and look again at the data
 
 ```{r, fig.width=13, fig.height=8}
 data$totalCases <- 0
@@ -488,6 +492,40 @@ scatterPlot <- ggplot(data, aes(x =DateRep, y = totalDeathsPerDay, text =Countri
 
 ggplotly(scatterPlot)
 ```
+
+## Italian Case {data-progressive=TRUE}
+
+In this case you can see that we can easily get direct access to the data that are published by Protezione Civile on github
+
+```{r, fig.width=8, fig.height=7}
+dataITALY <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"),header = T)
+
+summary(dataITALY)
+
+scatterPlot <- ggplot(dataITALY, aes(x=data, y = ricoverati_con_sintomi)) +
+  geom_point() +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1)) 
+
+scatterPlot
+```
+
+### do the same for all the interesting variables
+
+```{r ex10, exercise=TRUE,fig.width=8, fig.height=7}
+
+```
+
+```{r ex10-solution, fig.width=8, fig.height=7}
+for (i in 3:length(colnames(dataITALY))) {
+ scatterPlot <- ggplot(dataITALY, aes(x=data, y = dataITALY[,colnames(dataITALY[i])])) +
+  geom_point() +
+  ylab(colnames(dataITALY[i]))+
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))
+ 
+  print(scatterPlot)
+}
+```
+
 
 
 ### Aknowlegment and Contact
