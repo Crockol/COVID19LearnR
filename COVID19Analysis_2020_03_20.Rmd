@@ -43,7 +43,7 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-19.xlsx")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-20.xlsx")
 ```
 
 
@@ -96,7 +96,7 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-19.xlsx")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-20.xlsx")
 colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
 col <- topo.colors(length(unique(data$Countries)))
 names(col) <- unique(data$Countries)
@@ -106,6 +106,8 @@ data$totalDeaths <- 0
 data$totalCasesPerDay <- 0
 data$totalDeathsPerDay <- 0
 dataITALY <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"),header = T)
+dataREGIONI <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv"),header = T)
+dataPROVINCE <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv"),header = T)
 ```
 
 ### Exercise {data-allow-skip=TRUE}
@@ -499,6 +501,8 @@ In this case you can see that we can easily get direct access to the data that a
 
 ```{r, fig.width=8, fig.height=7}
 dataITALY <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"),header = T)
+dataREGIONI <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv"),header = T)
+dataPROVINCE <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv"),header = T)
 
 summary(dataITALY)
 
@@ -526,12 +530,54 @@ for (i in 3:length(colnames(dataITALY))) {
 }
 ```
 
+### Regional data
 
+```{r, fig.width=8, fig.height=7}
+
+summary(dataREGIONI)
+
+for (i in 7:length(colnames(dataREGIONI))) {
+  
+  scatterPlot <- ggplot(dataREGIONI, aes(x=data, y = dataREGIONI[,colnames(dataREGIONI[i])], col =denominazione_regione)) +
+  geom_point() +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
+  theme(legend.position="bottom") +
+  ylab(colnames(dataREGIONI[i]))
+  
+  print(scatterPlot)
+}
+```
+
+
+```{r, fig.width=8, fig.height=7}
+summary(dataPROVINCE)
+
+ scatterPlot <- ggplot(dataPROVINCE, aes(x=data, y = totale_casi, col =denominazione_provincia)) +
+  geom_point() +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1)) +
+  theme(legend.position="none")
+
+ggplotly(scatterPlot,tooltip = 'denominazione_provincia')
+```
+
+### Free space for exercise
+
+```{r ex11, exercise=TRUE,fig.width=8, fig.height=7}
+
+```
+
+```{r ex11-solution, fig.width=8, fig.height=7}
+# you can do that by your own now..
+
+```
 
 ### Aknowlegment and Contact
 
 Data were downloaded from the European Centre for Disease Prevention and Control webpage:
 https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
+
+and the portal from Protezione Civile for the Italian case:
+https://github.com/pcm-dpc/COVID-19
 
 ***
 
