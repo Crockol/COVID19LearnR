@@ -43,7 +43,8 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-20.xlsx")
+
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-22.xlsx")
 ```
 
 
@@ -96,7 +97,7 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-20.xlsx")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-22.xlsx")
 colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
 col <- topo.colors(length(unique(data$Countries)))
 names(col) <- unique(data$Countries)
@@ -345,7 +346,7 @@ ggplot(Italy, aes(x =DateRep, y = Cases)) +
 Or better fit an exponential model in this case
 
 ```{r, warning=FALSE,fig.width=8, fig.height=7} 
-Italy$pred <- exp(predict(lm(log2(Cases+0.01) ~ DateRep , data = Italy)))
+Italy$pred <- exp(predict(lm(log(Cases+0.01) ~ DateRep , data = Italy)))
 ggplot(Italy, aes(x =DateRep, y = Cases)) +
   geom_point() + 
   geom_line(aes(y = pred)) +
@@ -370,7 +371,7 @@ ggplot(Germany, aes(x =DateRep, y = Deaths)) +
   theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
   theme(legend.position = "none") 
   
-Germany$pred <- exp(predict(lm(log10(Deaths+0.01)~ DateRep , data = Germany)))
+Germany$pred <- exp(predict(lm(log(Deaths+0.01)~ DateRep , data = Germany)))
 ggplot(Germany, aes(x =DateRep, y = Deaths)) +
   geom_point() + 
   geom_line(aes(y = pred)) +
@@ -389,7 +390,7 @@ http://r-statistics.co/Linear-Regression.html
 
 Here we compute the total number of cases for each country and look again at the data
 
-```{r, fig.width=13, fig.height=8}
+```{r, fig.width=17, fig.height=8}
 data$totalCases <- 0
 data$totalDeaths <- 0
 data$totalCasesPerDay <- 0
@@ -408,7 +409,7 @@ ggplot(data, aes(Countries, totalCases, col=col[data$Countries])) +
 
 And with a log transformation
 
-```{r, fig.width=13, fig.height=8}
+```{r, fig.width=17, fig.height=8}
 
 ggplot(data, aes(Countries, log(totalCases+0.1), col=col[data$Countries])) +
   geom_col()+
