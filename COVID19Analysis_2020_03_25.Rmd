@@ -44,7 +44,7 @@ library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
 
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-22.xlsx")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-25.xlsx")
 ```
 
 
@@ -74,7 +74,7 @@ colnames(data)
 Here I transform the names of the column to avoid spaces. This is a classical mistake that is better to avoid when preparing your database. Then proceed with exploring some of the data inside the dataframe.
 
 ```{r}
-colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
+colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId", "Pop_Data.2018")
 colnames(data)
 class(data$Countries)
 head(rownames(data))
@@ -97,8 +97,8 @@ library(learnr)
 library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
-data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-22.xlsx")
-colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId")
+data <-  read_excel("DataECDC/COVID-19-geographic-disbtribution-worldwide-2020-03-25.xlsx")
+colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths", "Countries","GeoId", "Pop_Data.2018")
 col <- topo.colors(length(unique(data$Countries)))
 names(col) <- unique(data$Countries)
 data$Date <- as.character(data$DateRep)
