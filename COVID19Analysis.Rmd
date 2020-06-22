@@ -341,16 +341,7 @@ ggplot(Italy, aes(x =Date, y = Cases)) +
   theme(legend.position = "none") 
 ```
 
-Or better fit an exponential model in this case
 
-```{r, warning=FALSE,fig.width=8, fig.height=7} 
-Italy$pred <- exp(predict(lm(log(Cases+0.01) ~ Date , data = Italy)))
-ggplot(Italy, aes(x =Date, y = Cases)) +
-  geom_point() + 
-  geom_line(aes(y = pred)) +
-  theme(axis.text.x= element_text(angle = 90, hjust = 1, vjust = 1))+
-  theme(legend.position = "none") 
-```
 
 ### Exercise {data-allow-skip=TRUE}
 
