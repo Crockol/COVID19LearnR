@@ -45,7 +45,7 @@ library(plotly)
 library(htmlwidgets)
 
 data <- read.csv(url("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"),header = T)
-colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths","Countries","GeoId","CountryCode", "Pop_Data.2018")
+colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths","Countries","GeoId","CountryCode", "Pop_Data.2019", "Continent", "Cumulative_number_for_14_days_of_COVID.19_cases_per_100000")
 data$Date <- as.Date(paste0(data$Year,"-",data$Month, "-", data$Day))
 ```
 
@@ -97,7 +97,7 @@ library(RColorBrewer)
 library(plotly)
 library(htmlwidgets)
 data <- read.csv(url("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"),header = T)
-colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths","Countries","GeoId","CountryCode", "Pop_Data.2018")
+colnames(data) <- c("DateRep","Day" ,"Month","Year","Cases","Deaths","Countries","GeoId","CountryCode", "Pop_Data.2019", "Continent", "Cumulative_number_for_14_days_of_COVID.19_cases_per_100000")
 data$Date <- as.Date(paste0(data$Year,"-",data$Month, "-", data$Day))
 col <- topo.colors(length(unique(data$GeoId)))
 names(col) <- unique(data$GeoId)
@@ -106,8 +106,15 @@ data$totalDeaths <- 0
 data$totalCasesPerDay <- 0
 data$totalDeathsPerDay <- 0
 dataITALY <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"),header = T)
+dataITALY$data<- as.Date(dataITALY$data)
+dataITALY$note <- NULL
 dataREGIONI <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv"),header = T)
+dataREGIONI$data<- as.Date(dataREGIONI$data)
+dataREGIONI$note <- NULL
 dataPROVINCE <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv"),header = T)
+dataPROVINCE$data<- as.Date(dataPROVINCE$data)
+dataPROVINCE$note<- NULL
+
 ```
 
 ### Exercise {data-allow-skip=TRUE}
@@ -491,8 +498,14 @@ In this case you can see that we can easily get direct access to the data that a
 
 ```{r, fig.width=8, fig.height=7}
 dataITALY <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"),header = T)
+dataITALY$data<- as.Date(dataITALY$data)
+dataITALY$note <- NULL
 dataREGIONI <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv"),header = T)
+dataREGIONI$data<- as.Date(dataREGIONI$data)
+dataREGIONI$note <- NULL
 dataPROVINCE <- read.csv(url("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv"),header = T)
+dataPROVINCE$data<- as.Date(dataPROVINCE$data)
+dataPROVINCE$note<- NULL
 
 summary(dataITALY)
 

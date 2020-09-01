@@ -1,3 +1,5 @@
+## This application has been archived on the 1st of September 2020
+
 # COVID-19 Didactic experiment
 
 This is a simple didactic experiment on basic data analysis with R, using the datasets downloaded from the European Centre for Disease Prevention and Control webpage:
